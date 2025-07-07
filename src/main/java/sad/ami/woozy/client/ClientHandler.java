@@ -16,8 +16,7 @@ public class ClientHandler {
     public static void onClientSetup(FMLClientSetupEvent event) {
         var resourceManager = Minecraft.getInstance().getResourceManager();
 
-        for (var folder : List.of("geo/models/block", "geo/models/item"))
-            for (var loc : resourceManager.listResources(folder, path -> path.getPath().endsWith(".geo.json")).keySet())
+            for (var loc : resourceManager.listResources("geo/models/entity", path -> path.getPath().endsWith(".geo.json")).keySet())
                 event.enqueueWork(() -> GeoModelManager.preload(loc));
     }
 }

@@ -23,7 +23,7 @@ public class GeoRenderer {
     private int overlay;
     private int packedLight;
 
-    private void drawModel() {
+    public void drawModel() {
         GeoModel.Geometry geometry = assets.getGeoModel().minecraft_geometry.getFirst();
 
         int texWidth = geometry.description.texture_width;

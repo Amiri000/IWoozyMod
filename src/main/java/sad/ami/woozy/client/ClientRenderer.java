@@ -1,13 +1,17 @@
 package sad.ami.woozy.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import sad.ami.woozy.Woozy;
+import sad.ami.woozy.api.geo.GeoRenderer;
+import sad.ami.woozy.api.geo.util.ResourceAssetsSample;
 
 public class ClientRenderer {
     private static final ResourceLocation SPRITE = ResourceLocation.fromNamespaceAndPath(Woozy.MODID, "textures/gui/babt.png");
@@ -18,6 +22,9 @@ public class ClientRenderer {
 
     public static void renderAnimatedSprite(GuiGraphics graphics) {
         var mc = Minecraft.getInstance();
+        var pose = graphics.pose();
+
+        pose.pushPose();
 
         var sw = mc.getWindow().getGuiScaledWidth();
         var sh = mc.getWindow().getGuiScaledHeight();
@@ -36,9 +43,18 @@ public class ClientRenderer {
 
         RenderSystem.enableBlend();
 
-        graphics.blit(SPRITE, (int) xPos, y, 0f, frame * H, W, H, W, H * FRAMES);
+        pose.translate(xPos + 2, y + 2, 500);
+        pose.scale(2,2,2);
+
+        float angle = (System.currentTimeMillis() % 5000L) / 5000f * 360f;
+        pose.mulPose(Axis.YP.rotationDegrees(angle));
+
+        new GeoRenderer(pose, graphics.bufferSource(), new ResourceAssetsSample("test"), OverlayTexture.NO_OVERLAY, 0xF000F0)
+                .drawModel();
 
         RenderSystem.disableBlend();
+
+       pose.popPose();
     }
 
     private static void updatePosition(float min, float max) {
