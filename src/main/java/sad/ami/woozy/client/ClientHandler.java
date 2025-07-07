@@ -1,15 +1,23 @@
 package sad.ami.woozy.client;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import sad.ami.woozy.Woozy;
+import sad.ami.woozy.api.geo.manage.GeoModelManager;
 
-//@EventBusSubscriber(modid = Woozy.MODID, value = Dist.CLIENT)
+import java.util.List;
+
+@EventBusSubscriber(modid = Woozy.MODID, value = Dist.CLIENT)
 public class ClientHandler {
+    @SubscribeEvent
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        var resourceManager = Minecraft.getInstance().getResourceManager();
 
+        for (var folder : List.of("geo/models/block", "geo/models/item"))
+            for (var loc : resourceManager.listResources(folder, path -> path.getPath().endsWith(".geo.json")).keySet())
+                event.enqueueWork(() -> GeoModelManager.preload(loc));
+    }
 }
